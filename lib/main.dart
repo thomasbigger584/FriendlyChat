@@ -22,16 +22,32 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> {
+  final List<ChatMessage> _messages = <ChatMessage>[];
+
   final TextEditingController _textEditingController =
       new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("FriendlyChat"),
+      appBar: new AppBar(title: new Text("Friendlychat")),
+      body: new Column(
+        children: <Widget>[
+          new Flexible(
+            child: new ListView.builder(
+              padding: new EdgeInsets.all(8.0),
+              reverse: true,
+              itemBuilder: (_, int index) => _messages[index],
+              itemCount: _messages.length,
+            ),
+          ),
+          new Divider(),
+          new Container(
+            decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+            child: _buildTextComposer(),
+          ),
+        ],
       ),
-      body: _buildTextComposer(),
     );
   }
 
@@ -65,13 +81,20 @@ class ChatScreenState extends State<ChatScreen> {
 
   void _handleSubmitted(String text) {
     _textEditingController.clear();
+    ChatMessage message = new ChatMessage(
+      text: text,
+    );
+    setState(() {
+      _messages.insert(0, message);
+    });
   }
 }
 
-const String _name = "Your Name";
+const String _name = "Thomas Bigger";
 
 class ChatMessage extends StatelessWidget {
   ChatMessage({this.text});
+
   final String text;
 
   @override
@@ -83,7 +106,13 @@ class ChatMessage extends StatelessWidget {
         children: <Widget>[
           new Container(
             margin: const EdgeInsets.only(right: 16.0),
-            child: new CircleAvatar(child: new Text(_name[0])),
+            child: new InkWell(
+              child: new CircleAvatar(
+                child: new Text(_name[0]),
+              ),
+              onTap: _handleAvatarPress,
+              onLongPress: _handleAvatarLongPress,
+            ),
           ),
           new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,5 +127,13 @@ class ChatMessage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _handleAvatarPress() {
+    print("Avatar press");
+  }
+
+  void _handleAvatarLongPress() {
+    print("Avatar long press");
   }
 }
