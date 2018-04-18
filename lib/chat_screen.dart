@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_friendlychat/chat_message.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -11,6 +14,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
+  final googleSignIn = new GoogleSignIn();
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textEditingController =
       new TextEditingController();
@@ -90,11 +94,24 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _handleSubmitted(String text) {
+  Future<Null> _handleSubmitted(String text) async {
     _textEditingController.clear();
     setState(() {
       _isComposing = false;
     });
+    await _ensureLoggedIn();
+    _sendMessage(text);
+  }
+
+  Future<Null> _ensureLoggedIn() async {
+    GoogleSignInAccount user = googleSignIn.currentUser;
+    if (user == null) user = await googleSignIn.signInSilently();
+    if (user == null) {
+      await googleSignIn.signIn();
+    }
+  }
+
+  void _sendMessage(String text) {
     AnimationController animationController = new AnimationController(
       duration: new Duration(milliseconds: 700),
       vsync: this,
