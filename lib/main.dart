@@ -8,7 +8,7 @@ class FriendlyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: "Friendlychat",
+      title: "FriendlyChat",
       home: new ChatScreen(),
     );
   }
@@ -25,11 +25,12 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textEditingController =
       new TextEditingController();
+  bool _isComposing = false;
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text("Friendlychat")),
+      appBar: new AppBar(title: new Text("FriendlyChat")),
       body: new Column(
         children: <Widget>[
           new Flexible(
@@ -64,6 +65,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: new TextField(
                 controller: _textEditingController,
                 onSubmitted: _handleSubmitted,
+                onChanged: _handleOnTextChanged,
                 decoration:
                     new InputDecoration.collapsed(hintText: "Send a message"),
               ),
@@ -71,9 +73,11 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             new Container(
               margin: new EdgeInsets.symmetric(horizontal: 4.0),
               child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: () =>
-                      _handleSubmitted(_textEditingController.text)),
+                icon: new Icon(Icons.send),
+                onPressed: _isComposing
+                    ? () => _handleSubmitted(_textEditingController.text)
+                    : null,
+              ),
             ),
           ],
         ),
@@ -83,6 +87,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _handleSubmitted(String text) {
     _textEditingController.clear();
+    setState(() {
+      _isComposing = false;
+    });
     AnimationController animationController = new AnimationController(
       duration: new Duration(milliseconds: 700),
       vsync: this,
@@ -102,6 +109,12 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     if (status == AnimationStatus.completed) {
       print("Messaged Added!");
     }
+  }
+
+  void _handleOnTextChanged(String text) {
+    setState(() {
+      _isComposing = text.length > 0;
+    });
   }
 
   @override
@@ -144,15 +157,18 @@ class ChatMessage extends StatelessWidget {
                     onLongPress: _handleAvatarLongPress,
                   ),
                 ),
-                new Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Text(_name, style: Theme.of(context).textTheme.subhead),
-                    new Container(
-                      margin: const EdgeInsets.only(top: 5.0),
-                      child: new Text(text),
-                    ),
-                  ],
+                new Expanded(
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(_name,
+                          style: Theme.of(context).textTheme.subhead),
+                      new Container(
+                        margin: const EdgeInsets.only(top: 5.0),
+                        child: new Text(text),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
