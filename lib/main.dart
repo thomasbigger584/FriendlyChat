@@ -10,6 +10,8 @@ class FriendlyChatApp extends StatelessWidget {
     return new MaterialApp(
       title: "FriendlyChat",
       home: new ChatScreen(),
+      theme: ThemeData.light(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
