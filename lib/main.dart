@@ -1,16 +1,32 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(new FriendlyChatApp());
 }
 
+final ThemeData kIOSTheme = new ThemeData(
+    primarySwatch: Colors.orange,
+    primaryColor: Colors.grey[100],
+    primaryColorBrightness: Brightness.light);
+
+final ThemeData kDefaultTheme = new ThemeData(
+  primarySwatch: Colors.purple,
+  accentColor: Colors.orangeAccent[400],
+);
+
 class FriendlyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = kDefaultTheme;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      theme = kIOSTheme;
+    }
     return new MaterialApp(
       title: "FriendlyChat",
       home: new ChatScreen(),
-      theme: ThemeData.light(),
+      theme: theme,
       debugShowCheckedModeBanner: false,
     );
   }
@@ -32,7 +48,11 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text("FriendlyChat")),
+      appBar: new AppBar(
+        title: new Text("FriendlyChat"),
+        elevation:
+            Theme.of(context).platform == TargetPlatform.android ? 4.0 : 0.0,
+      ),
       body: new Column(
         children: <Widget>[
           new Flexible(
@@ -68,23 +88,34 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 controller: _textEditingController,
                 onSubmitted: _handleSubmitted,
                 onChanged: _handleOnTextChanged,
-                decoration:
-                    new InputDecoration.collapsed(hintText: "Send a message"),
+                decoration: new InputDecoration.collapsed(hintText: "Send a message"),
               ),
             ),
             new Container(
-              margin: new EdgeInsets.symmetric(horizontal: 4.0),
-              child: new IconButton(
-                icon: new Icon(Icons.send),
-                onPressed: _isComposing
-                    ? () => _handleSubmitted(_textEditingController.text)
-                    : null,
-              ),
-            ),
+                margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                child: _buildSendButton()),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSendButton() {
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      return new IconButton(
+        icon: new Icon(Icons.send),
+        onPressed: _isComposing
+            ? () => _handleSubmitted(_textEditingController.text)
+            : null,
+      );
+    } else {
+      return new CupertinoButton(
+        child: new Text("Send"),
+        onPressed: _isComposing
+            ? () => _handleSubmitted(_textEditingController.text)
+            : null,
+      );
+    }
   }
 
   void _handleSubmitted(String text) {
