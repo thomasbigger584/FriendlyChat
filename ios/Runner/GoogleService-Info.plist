@@ -36,5 +36,19 @@
 	<string>1:750080466077:ios:de8a428e8de51581</string>
 	<key>DATABASE_URL</key>
 	<string>https://friendlychat-f6aa2.firebaseio.com</string>
+	<key>CFBundleURLTypes</key>
+      <array>
+          <dict>
+             <key>CFBundleTypeRole</key>
+             <string>Editor</string>
+             <key>CFBundleURLSchemes</key>
+             <array>
+             <!-- reverse url of your client id, for example: -->
+                <string>com.googleusercontent.apps.750080466077-maa25t5q51vufucprs2rhnlvm4qnr2a7</string>
+             <!-- bundle id, for example: -->
+                <string>com.yourcompany.myFriendlychat</string>
+             </array>
+          </dict>
+      </array>
 </dict>
 </plist>
