@@ -16,8 +16,7 @@ class ChatScreen extends StatefulWidget {
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final googleSignIn = new GoogleSignIn();
   final List<ChatMessage> _messages = <ChatMessage>[];
-  final TextEditingController _textEditingController =
-      new TextEditingController();
+  final TextEditingController _textEditingController = new TextEditingController();
   bool _isComposing = false;
 
   @override
